@@ -1,5 +1,6 @@
 const { loadFixture } = require('@nomicfoundation/hardhat-network-helpers');
 const { assert } = require('chai');
+// const { ethers } = require('hardhat');
 
 describe('Game3', function () {
   async function deployContractAndSetVariables() {
@@ -20,14 +21,24 @@ describe('Game3', function () {
 
   it('should be a winner', async function () {
     const { game, signer } = await loadFixture(deployContractAndSetVariables);
-
+    const [_,signer1, signer2, signer3] = await ethers.getSigners();
     // you'll need to update the `balances` mapping to win this stage
 
     // to call a contract as a signer you can use contract.connect
-    await game.connect(signer).buy({ value: '1' });
+    // await game.connect(signer).buy({ value: '1' });
+    await game.connect(signer1).buy({ value: '2' });
+    await game.connect(signer2).buy({ value: '3' });
+    await game.connect(signer3).buy({ value: '1' });
 
+    const address1 = await signer1.getAddress() 
+    const address2= await signer2.getAddress() 
+    const address3 = await signer3.getAddress()
     // TODO: win expects three arguments
-    await game.win();
+    await game.win(
+      address1,
+      address2,
+      address3
+    );
 
     // leave this assertion as-is
     assert(await game.isWon(), 'You did not win the game');
